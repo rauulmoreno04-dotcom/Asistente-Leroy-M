@@ -115,6 +115,24 @@ function procesarIA(txt) {
     ocultarRutaDOM();
     const stopWords = ["hola", "donde", "hay", "esta", "estan", "puedo", "encontrar", "busco", "necesito", "quiero", "un", "una", "el", "la","necesito", "dame", "pillar", "tomar", "coger", "brindar", "tomar" ];
     let textoLimpio = txt.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    
+    // ==========================================
+    // TRATAMIENTO ESPECIAL PARA ASEOS/BAÑOS
+    // ==========================================
+    if (textoLimpio.includes("aseo") || textoLimpio.includes("baño") || textoLimpio.includes("servicio")) {
+        let mejorProducto = inventario.find(item => item.zona === "Aseos");
+        if (mejorProducto) {
+            let ruta = findPath(ENTRADA.x, ENTRADA.y, mejorProducto.x, mejorProducto.y);
+            if (ruta) {
+                let m = "Están a la derecha de la entrada a tienda.";
+                botMsg(m); hablar(m);
+                dibujarRutaDOM(ruta); // Dibuja la ruta directamente, sin PopUp
+                return; // Salimos de la función aquí para no hacer nada más
+            }
+        }
+    }
+    // ==========================================
+
     let palabrasUsuario = textoLimpio.split(" ").filter(p => !stopWords.includes(p) && p.length > 2);
 
     let mejorProducto = null, mejorPuntuacion = 0;
@@ -132,7 +150,7 @@ function procesarIA(txt) {
             let m = `He encontrado ${mejorProducto.nombre} en ${mejorProducto.zona}, pasillo ${mejorProducto.pasillo}, estantería ${mejorProducto.estanteria}, a altura ${altTxt}.`;
             botMsg(m); hablar(m);
             itemPendiente = mejorProducto; rutaPendiente = ruta;
-            mostrarPopUp(mejorProducto, ruta);
+            mostrarPopUp(mejorProducto, ruta); // Solo los productos abren el modal
         }
     } else {
         let m = "Lo siento, no encuentro ese producto.";
@@ -141,7 +159,7 @@ function procesarIA(txt) {
 }
 
 // ==========================================
-// MOTOR DE VOZ: 10 TIPOS DE ASISTENTES (TU VERSIÓN ADJUNTA)
+// MOTOR DE VOZ: 10 TIPOS DE ASISTENTES
 // ==========================================
 function hablar(t) {
     const u = new SpeechSynthesisUtterance(t);
