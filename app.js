@@ -119,7 +119,7 @@ function procesarIA(txt) {
     // ==========================================
     // TRATAMIENTO ESPECIAL PARA ASEOS/BAÑOS
     // ==========================================
-    if (textoLimpio.includes("aseo") || textoLimpio.includes("baño") || textoLimpio.includes("servicio")) {
+    if (textoLimpio.includes("aseo") || textoLimpio.includes("bano") || textoLimpio.includes("servicio")) {
         let mejorProducto = inventario.find(item => item.zona === "Aseos");
         if (mejorProducto) {
             let ruta = findPath(ENTRADA.x, ENTRADA.y, mejorProducto.x, mejorProducto.y);
